@@ -3,67 +3,47 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>💧 Varunetra Complaint Portal</title>
+  <title>💧 VARUNETRA SATHI</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
       background: linear-gradient(to bottom right, #00c6ff, #0072ff);
       margin: 0;
       padding: 0;
-      min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
+      min-height: 100vh;
     }
     .container {
+      width: 90%;
+      max-width: 450px;
       background: white;
       padding: 25px;
       border-radius: 20px;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.2);
-      width: 90%;
-      max-width: 480px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
     }
     h2 {
       text-align: center;
       color: #0072ff;
-      margin-bottom: 20px;
     }
-    .form-group {
-      margin-bottom: 15px;
-    }
-    input, textarea, button {
+    input, textarea, select, button {
       width: 100%;
       padding: 12px;
-      border-radius: 10px;
+      margin: 8px 0;
       border: 1px solid #ddd;
-      font-size: 15px;
-      box-sizing: border-box;
-    }
-    input:focus, textarea:focus {
-      border-color: #0072ff;
-      outline: none;
-    }
-    textarea {
-      resize: none;
-      height: 80px;
+      border-radius: 12px;
+      font-size: 16px;
     }
     button {
       background: #0072ff;
       color: white;
       font-weight: bold;
-      border: none;
       cursor: pointer;
       transition: 0.3s;
     }
-    button:hover {
-      background: #0056cc;
-    }
-    #submitBtn.submitting {
-      background: #555 !important;
-      cursor: wait;
-    }
-    /* Popup modal */
-    .modal {
+    button:hover { background: #005ad4; }
+    .popup {
       display: none;
       position: fixed;
       top: 0; left: 0;
@@ -72,137 +52,272 @@
       justify-content: center;
       align-items: center;
     }
-    .modal-content {
+    .popup-content {
       background: white;
-      padding: 25px;
+      padding: 20px;
       border-radius: 15px;
       text-align: center;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.3);
-      width: 80%;
-      max-width: 350px;
-    }
-    .modal-content h3 {
-      color: #0072ff;
-      margin-bottom: 10px;
-    }
-    .close-btn {
-      margin-top: 15px;
-      background: #0072ff;
-      color: white;
-      border: none;
-      padding: 10px 18px;
-      border-radius: 10px;
-      cursor: pointer;
+      max-width: 300px;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h2>🚰 Varunetra Complaint Form</h2>
+    <h2>Register Complaint</h2>
     <form id="complaintForm">
-      <div class="form-group"><input type="text" id="name" placeholder="Your Name" required></div>
-      <div class="form-group"><input type="tel" id="phone" placeholder="Phone Number" required></div>
-      <div class="form-group"><input type="text" id="address" placeholder="Full Address" required></div>
-      <div class="form-group"><input type="text" id="city" placeholder="City" required></div>
-      <div class="form-group"><input type="text" id="state" placeholder="State" required></div>
-      <div class="form-group"><input type="text" id="pin" placeholder="Pincode" required></div>
-      <div class="form-group"><input type="text" id="problem" placeholder="Problem (e.g., Leak, Blockage)" required></div>
-      <div class="form-group"><textarea id="details" placeholder="Additional Details"></textarea></div>
-      <div class="form-group">
-        <button type="button" onclick="getLocation()">📍 Get Location</button>
-      </div>
-      <div class="form-group">
-        <button type="submit" id="submitBtn">Submit</button>
-      </div>
+      <input type="text" name="name" placeholder="Name" required>
+      <input type="tel" name="phone" placeholder="Phone" required>
+      <textarea name="address" placeholder="Address" required></textarea>
+      <input type="text" name="city" placeholder="City" required>
+      <input type="text" name="state" placeholder="State" required>
+      <input type="text" name="pin" placeholder="PIN Code" required>
+      <select name="problem" required>
+        <option value="">-- Select Problem --</option>
+        <option>Leakage</option>
+        <option>Clogged Drain</option>
+        <option>Illegal Connection</option>
+        <option>Other</option>
+      </select>
+      <textarea name="details" placeholder="More details..."></textarea>
+      <button type="button" onclick="getLocation()">📍 Get Location</button>
+      <input type="hidden" name="latitude">
+      <input type="hidden" name="longitude">
+      <button type="submit">Submit</button>
+      <p id="status"></p>
     </form>
   </div>
 
-  <!-- Complaint Number Popup -->
-  <div class="modal" id="complaintModal">
-    <div class="modal-content">
-      <h3>✅ Complaint Submitted</h3>
-      <p id="complaintMsg"></p>
-      <button class="close-btn" onclick="closeModal()">OK</button>
+  <!-- Popup -->
+  <div id="popup" class="popup">
+    <div class="popup-content">
+      <h3>✅ Complaint Registered!</h3>
+      <p>Your complaint number is:</p>
+      <h2 id="complaintNum"></h2>
+      <button onclick="closePopup()">OK</button>
     </div>
   </div>
 
-  <script>
-    const scriptURL = "https://script.google.com/macros/s/AKfycbzMUzCvwr7T4uRqNDPhrKlplnZq9N1SwC5zJmp7ktFK0ePCPlcO1P9V6g0wNN0k4jyUtQ/exec";
-
-    // Get location and autofill city/state/pincode
-    function getLocation() {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(async (pos) => {
-          let lat = pos.coords.latitude;
-          let lon = pos.coords.longitude;
-
-          // Save lat/lon
-          document.getElementById("complaintForm").dataset.lat = lat;
-          document.getElementById("complaintForm").dataset.lon = lon;
-
-          // Reverse geocode using OpenStreetMap
-          try {
-            let res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
-            let data = await res.json();
-            document.getElementById("city").value = data.address.city || data.address.town || data.address.village || "";
-            document.getElementById("state").value = data.address.state || "";
-            document.getElementById("pin").value = data.address.postcode || "";
-          } catch (err) {
-            alert("⚠️ Location detected, but details could not be fetched.");
-          }
-        });
-      } else {
-        alert("❌ Geolocation not supported.");
-      }
+<script>
+const scriptURL = "<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>💧 VARUNETRA SATHI</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to bottom right, #00c6ff, #0072ff);
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
     }
+    .container {
+      width: 90%;
+      max-width: 450px;
+      background: white;
+      padding: 25px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    }
+    h2 {
+      text-align: center;
+      color: #0072ff;
+    }
+    input, textarea, select, button {
+      width: 100%;
+      padding: 12px;
+      margin: 8px 0;
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      font-size: 16px;
+    }
+    button {
+      background: #0072ff;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    button:hover { background: #005ad4; }
+    .popup {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.6);
+      justify-content: center;
+      align-items: center;
+    }
+    .popup-content {
+      background: white;
+      padding: 20px;
+      border-radius: 15px;
+      text-align: center;
+      max-width: 300px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Register Complaint</h2>
+    <form id="complaintForm">
+      <input type="text" name="name" placeholder="Name" required>
+      <input type="tel" name="phone" placeholder="Phone" required>
+      <textarea name="address" placeholder="Address" required></textarea>
+      <input type="text" name="city" placeholder="City" required>
+      <input type="text" name="state" placeholder="State" required>
+      <input type="text" name="pin" placeholder="PIN Code" required>
+      <select name="problem" required>
+        <option value="">-- Select Problem --</option>
+        <option>Leakage</option>
+        <option>Clogged Drain</option>
+        <option>Illegal Connection</option>
+        <option>Other</option>
+      </select>
+      <textarea name="details" placeholder="More details..."></textarea>
+      <button type="button" onclick="getLocation()">📍 Get Location</button>
+      <input type="hidden" name="latitude">
+      <input type="hidden" name="longitude">
+      <button type="submit">Submit</button>
+      <p id="status"></p>
+    </form>
+  </div>
 
-    // Handle form submission
-    document.getElementById("complaintForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
+  <!-- Popup -->
+  <div id="popup" class="popup">
+    <div class="popup-content">
+      <h3>✅ Complaint Registered!</h3>
+      <p>Your complaint number is:</p>
+      <h2 id="complaintNum"></h2>
+      <button onclick="closePopup()">OK</button>
+    </div>
+  </div>
 
-      let btn = document.getElementById("submitBtn");
-      btn.innerText = "Submitting... ⏳";
-      btn.classList.add("submitting");
+<script>
+const scriptURL = "https://script.google.com/macros/s/AKfycbynBsli2HN_7SqK8v4W-AdiFTHBM6LG0UBE3daAkySlOUYLvwkwcOAs89w2E3Zr1DRWtg/exec";
 
-      let formData = {
-        name: document.getElementById("name").value,
-        phone: document.getElementById("phone").value,
-        address: document.getElementById("address").value,
-        city: document.getElementById("city").value,
-        state: document.getElementById("state").value,
-        pin: document.getElementById("pin").value,
-        problem: document.getElementById("problem").value,
-        details: document.getElementById("details").value,
-        latitude: document.getElementById("complaintForm").dataset.lat || "",
-        longitude: document.getElementById("complaintForm").dataset.lon || ""
-      };
+document.getElementById("complaintForm").addEventListener("submit", e => {
+  e.preventDefault();
+  const form = e.target;
+  const data = Object.fromEntries(new FormData(form));
 
+  document.getElementById("status").innerText = "⏳ Submitting...";
+
+  fetch(scriptURL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data)
+  })
+  .then(res => res.json())
+  .then(res => {
+    if (res.status === "success") {
+      document.getElementById("status").innerText = "";
+      showPopup(res.complaintNumber);
+      form.reset();
+    } else {
+      document.getElementById("status").innerText = "❌ Error: " + res.message;
+    }
+  })
+  .catch(err => {
+    document.getElementById("status").innerText = "❌ Failed to submit. Try again.";
+  });
+});
+
+function getLocation() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(async pos => {
+      const lat = pos.coords.latitude;
+      const lon = pos.coords.longitude;
+      document.querySelector("input[name='latitude']").value = lat;
+      document.querySelector("input[name='longitude']").value = lon;
+
+      // Auto-fill city, state, pincode using OpenStreetMap API
       try {
-        let res = await fetch(scriptURL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(formData)
-        });
-        let data = await res.json();
-
-        if (data.success) {
-          document.getElementById("complaintMsg").innerText = "Your Complaint Number is: " + data.complaintNumber;
-          document.getElementById("complaintModal").style.display = "flex";
-          document.getElementById("complaintForm").reset();
-        } else {
-          alert("❌ Error: " + data.error);
+        const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
+        const loc = await res.json();
+        if (loc.address) {
+          document.querySelector("input[name='city']").value = loc.address.city || loc.address.town || "";
+          document.querySelector("input[name='state']").value = loc.address.state || "";
+          document.querySelector("input[name='pin']").value = loc.address.postcode || "";
         }
-      } catch (err) {
-        alert("❌ Failed to submit. Try again.");
-      }
-
-      btn.innerText = "Submit";
-      btn.classList.remove("submitting");
+      } catch {}
     });
+  }
+}
 
-    function closeModal() {
-      document.getElementById("complaintModal").style.display = "none";
+// Popup functions
+function showPopup(num) {
+  document.getElementById("complaintNum").innerText = num;
+  document.getElementById("popup").style.display = "flex";
+}
+function closePopup() {
+  document.getElementById("popup").style.display = "none";
+}
+</script>
+</body>
+</html>
+
+document.getElementById("complaintForm").addEventListener("submit", e => {
+  e.preventDefault();
+  const form = e.target;
+  const data = Object.fromEntries(new FormData(form));
+
+  document.getElementById("status").innerText = "⏳ Submitting...";
+
+  fetch(scriptURL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data)
+  })
+  .then(res => res.json())
+  .then(res => {
+    if (res.status === "success") {
+      document.getElementById("status").innerText = "";
+      showPopup(res.complaintNumber);
+      form.reset();
+    } else {
+      document.getElementById("status").innerText = "❌ Error: " + res.message;
     }
-  </script>
+  })
+  .catch(err => {
+    document.getElementById("status").innerText = "❌ Failed to submit. Try again.";
+  });
+});
+
+function getLocation() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(async pos => {
+      const lat = pos.coords.latitude;
+      const lon = pos.coords.longitude;
+      document.querySelector("input[name='latitude']").value = lat;
+      document.querySelector("input[name='longitude']").value = lon;
+
+      // Auto-fill city, state, pincode using OpenStreetMap API
+      try {
+        const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
+        const loc = await res.json();
+        if (loc.address) {
+          document.querySelector("input[name='city']").value = loc.address.city || loc.address.town || "";
+          document.querySelector("input[name='state']").value = loc.address.state || "";
+          document.querySelector("input[name='pin']").value = loc.address.postcode || "";
+        }
+      } catch {}
+    });
+  }
+}
+
+// Popup functions
+function showPopup(num) {
+  document.getElementById("complaintNum").innerText = num;
+  document.getElementById("popup").style.display = "flex";
+}
+function closePopup() {
+  document.getElementById("popup").style.display = "none";
+}
+</script>
 </body>
 </html>
