@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>💧 VARUNETRA - Complaint Portal</title>
+  <style>
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background: linear-gradient(to bottom right, #00c6ff, #0072ff);
+      margin: 0;
+      padding: 0;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      background: #ffffff10;
+      padding: 25px;
+      border-radius: 20px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+      width: 95%;
+      max-width: 450px;
+      backdrop-filter: blur(10px);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 1.8em;
+      font-weight: bold;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 0.95em;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 10px;
+      border-radius: 10px;
+      border: none;
+      outline: none;
+      font-size: 1em;
+    }
+
+    textarea {
+      resize: none;
+      height: 80px;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 12px;
+      margin-top: 10px;
+      background: #ff9800;
+      border: none;
+      border-radius: 12px;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .btn:hover {
+      background: #e68900;
+    }
+
+    #complaintNumberBox {
+      display: none;
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 12px;
+      background: #28a745;
+      color: #fff;
+      font-weight: bold;
+      text-align: center;
+      animation: fadeIn 0.8s ease;
+    }
+
+    @keyframes fadeIn {
+      from {opacity: 0; transform: translateY(10px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+
+    .small-btn {
+      background: #2196f3;
+      padding: 8px 12px;
+      font-size: 0.9em;
+      width: auto;
+      margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>💧 VARUNETRA</h1>
+    <form id="complaintForm">
+      <div class="form-group">
+        <label>Name</label>
+        <input type="text" name="name" required />
+      </div>
+
+      <div class="form-group">
+        <label>Phone</label>
+        <input type="text" name="phone" required />
+      </div>
+
+      <div class="form-group">
+        <label>Address</label>
+        <textarea name="address" required></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>City</label>
+        <input type="text" name="city" required />
+      </div>
+
+      <div class="form-group">
+        <label>State</label>
+        <input type="text" name="state" required />
+      </div>
+
+      <div class="form-group">
+        <label>Pincode</label>
+        <input type="text" name="pin" required />
+      </div>
+
+      <div class="form-group">
+        <label>Problem Type</label>
+        <select name="problem" required>
+          <option value="Leakage">Leakage</option>
+          <option value="Clogging">Clogging</option>
+          <option value="Illegal Connection">Illegal Connection</option>
+          <option value="Water Quality">Water Quality</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Details</label>
+        <textarea name="details"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Location</label>
+        <input type="text" name="latitude" id="latitude" placeholder="Latitude" readonly />
+        <input type="text" name="longitude" id="longitude" placeholder="Longitude" readonly />
+        <button type="button" class="btn small-btn" onclick="getLocation()">📍 Get Location</button>
+      </div>
+
+      <button type="submit" class="btn">Submit Complaint</button>
+    </form>
+
+    <div id="complaintNumberBox"></div>
+  </div>
+
+  <script>
+    const scriptURL = "https://script.google.com/macros/s/AKfycby2kPHK17Sq74p73NsNceRQsc0AP7xgAifcKzhuHVU9RyWQxb7b3oSP6YxShKFmLYD5WQ/exec";
+
+    document.getElementById("complaintForm").addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      let formData = new FormData(document.getElementById("complaintForm"));
+
+      try {
+        const response = await fetch(scriptURL, {
+          method: "POST",
+          body: formData
+        });
+
+        const complaintNumber = await response.text();
+
+        if (complaintNumber.startsWith("CMP-")) {
+          let box = document.getElementById("complaintNumberBox");
+          box.style.display = "block";
+          box.innerText = "✅ Complaint submitted!\nYour Complaint Number: " + complaintNumber;
+          document.getElementById("complaintForm").reset();
+        } else {
+          alert("❌ Error: " + complaintNumber);
+        }
+      } catch (err) {
+        alert("⚠️ Request failed: " + err.message);
+      }
+    });
+
+    function getLocation() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            document.getElementById("latitude").value = pos.coords.latitude.toFixed(6);
+            document.getElementById("longitude").value = pos.coords.longitude.toFixed(6);
+          },
+          (err) => {
+            alert("Location access denied. Please enter manually.");
+          }
+        );
+      } else {
+        alert("Geolocation is not supported by this browser.");
+      }
+    }
+  </script>
+</body>
+</html>
