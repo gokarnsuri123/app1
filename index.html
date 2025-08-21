@@ -1,245 +1,194 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>💧 VARUNETRA SATHI</title>
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#0072ff">
-<style>
-  body {
-    font-family: 'Segoe UI', sans-serif;
-    background: linear-gradient(to bottom right, #00c6ff, #0072ff);
-    margin: 0;
-    padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    min-height: 100vh;
-  }
-  .container {
-    background: rgba(255,255,255,0.98);
-    margin: 30px 15px;
-    padding: 25px;
-    border-radius: 20px;
-    max-width: 480px;
-    width: 100%;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-    animation: fadeIn 0.6s ease;
-  }
-  @keyframes fadeIn {
-    from {opacity: 0; transform: translateY(20px);}
-    to {opacity: 1; transform: translateY(0);}
-  }
-  h1 {
-    text-align: center;
-    color: #0072ff;
-    margin-bottom: 8px;
-    font-size: 1.6rem;
-  }
-  p {
-    text-align: center;
-    color: #444;
-    font-size: 0.95rem;
-    margin-bottom: 20px;
-  }
-  input, select, textarea, button {
-    width: 100%;
-    padding: 14px 15px;
-    margin: 8px 0;
-    border-radius: 12px;
-    border: 1px solid #ccc;
-    font-size: 1rem;
-    box-sizing: border-box;
-    background: #fff;
-  }
-  textarea {
-    resize: vertical;
-    min-height: 80px;
-  }
-  button {
-    background: #0072ff;
-    color: white;
-    font-size: 1.05rem;
-    font-weight: bold;
-    border: none;
-    cursor: pointer;
-    transition: 0.3s;
-  }
-  button:disabled {
-    background: #aaa;
-    cursor: not-allowed;
-  }
-  button:hover:not(:disabled) {
-    background: #005ecb;
-  }
-  .small-btn {
-    background: #28a745;
-    font-size: 0.9rem;
-    margin-top: 5px;
-  }
-  label {
-    font-weight: bold;
-    color: #333;
-    margin-top: 10px;
-    display: block;
-  }
-  /* Popup */
-  .popup {
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0,0,0,0.6);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    visibility: hidden;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    z-index: 2000;
-  }
-  .popup.show {
-    visibility: visible;
-    opacity: 1;
-  }
-  .popup-content {
-    background: #fff;
-    padding: 25px;
-    border-radius: 14px;
-    max-width: 320px;
-    text-align: center;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.2);
-  }
-  .popup-content h2 {
-    margin: 0 0 10px;
-    color: #0072ff;
-  }
-  .popup-content button {
-    margin-top: 15px;
-    background: #0072ff;
-    color: white;
-    padding: 10px 20px;
-    border-radius: 8px;
-    border: none;
-    cursor: pointer;
-  }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>💧 Varunetra Complaint Portal</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #00c6ff, #0072ff);
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      width: 95%;
+      max-width: 450px;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #0072ff;
+    }
+
+    label {
+      font-weight: 600;
+      display: block;
+      margin-bottom: 6px;
+      color: #333;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      font-size: 15px;
+      background: #fff;
+    }
+
+    textarea {
+      resize: vertical;
+      height: 80px;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .btn-location {
+      background: #ff9800;
+      color: white;
+      margin-bottom: 15px;
+    }
+
+    .btn-location:hover {
+      background: #e68900;
+    }
+
+    .btn-submit {
+      background: #0072ff;
+      color: white;
+    }
+
+    .btn-submit:hover {
+      background: #0059cc;
+    }
+  </style>
 </head>
 <body>
+  <div class="container">
+    <h2>💧 File a Complaint</h2>
+    <form id="complaintForm">
+      <label>Name</label>
+      <input type="text" id="name" required>
 
-<div class="container">
-  <h1>💧 VARUNETRA SATHI</h1>
-  <p>Report water & drainage issues quickly in your area</p>
+      <label>Phone</label>
+      <input type="text" id="phone" required>
 
-  <form id="reportForm">
-    <label>👤 Full Name</label>
-    <input name="name" placeholder="Your name" required>
+      <label>Address</label>
+      <input type="text" id="address" required>
 
-    <label>📞 Phone Number</label>
-    <input name="phone" type="tel" placeholder="+91 98xxxxxx" required>
+      <label>City</label>
+      <input type="text" id="city" required>
 
-    <label>🏠 Street Address</label>
-    <input name="address" placeholder="House/Street, Landmark" required>
+      <label>State</label>
+      <input type="text" id="state" required>
 
-    <label>🌆 City</label>
-    <input name="city" required>
+      <label>Pincode</label>
+      <input type="text" id="pin" required>
 
-    <label>🗺️ State</label>
-    <input name="state" required>
+      <label>Problem Type</label>
+      <input type="text" id="problem" required>
 
-    <label>📮 PIN Code</label>
-    <input name="pin" pattern="[0-9]{6}" placeholder="6-digit PIN" required>
-    <button type="button" class="small-btn" onclick="fillLocation()">📍 Use My Location</button>
+      <label>Details</label>
+      <textarea id="details"></textarea>
 
-    <label>🚧 Problem</label>
-    <select name="problem" required>
-      <option value="">Select a problem</option>
-      <option value="Closed drain nearby">Closed drain nearby</option>
-      <option value="Less water flow">Less water flow</option>
-      <option value="Dirty water">Dirty water</option>
-      <option value="Others">Others</option>
-    </select>
+      <input type="hidden" id="latitude">
+      <input type="hidden" id="longitude">
 
-    <label>📝 Additional Details (optional)</label>
-    <textarea name="details" placeholder="Extra details"></textarea>
-
-    <button type="submit">📤 Submit Report</button>
-  </form>
-</div>
-
-<!-- Complaint Popup -->
-<div id="popup" class="popup">
-  <div class="popup-content">
-    <h2>✅ Report Submitted</h2>
-    <p>Your Complaint Number is:</p>
-    <h3 id="complainNumber" style="color:#28a745"></h3>
-    <button onclick="closePopup()">OK</button>
+      <button type="button" class="btn-location" onclick="getLocation()">📍 Get Location</button>
+      <button type="submit" class="btn-submit" id="submitBtn">Submit</button>
+    </form>
   </div>
-</div>
 
-<script>
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwhwQl3-3EwHJEi1jU40h2610SWRdqd6iMDZmdBQLeFHbASafL2A2T349WC36xOFtjmBg/exec"; // Replace with Apps Script web app link
-const form = document.getElementById("reportForm");
-const button = form.querySelector("button[type='submit']");
-const popup = document.getElementById("popup");
-const complainNumberEl = document.getElementById("complainNumber");
+  <script>
+    const scriptURL = "https://script.google.com/macros/s/AKfycbyE8iwWBj7VTh2iRENL3SRjlBQ4iQ978nCc5ICRs64rGC7djgcQF8gVKCoqSHScf2lF3Q/exec";
 
-form.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  button.disabled = true;
-  button.textContent = "⏳ Submitting...";
+    function getLocation() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(async (pos) => {
+          const lat = pos.coords.latitude;
+          const lon = pos.coords.longitude;
+          document.getElementById("latitude").value = lat;
+          document.getElementById("longitude").value = lon;
 
-  const data = {};
-  new FormData(form).forEach((v, k) => data[k] = v);
-
-  try {
-    let res = await fetch(SCRIPT_URL, {
-      method: "POST",
-      body: JSON.stringify(data),
-      headers: {"Content-Type": "application/json"}
-    });
-    let text = await res.text();
-    // Expect backend returns complaint number
-    let num = text.match(/C\d+/) ? text.match(/C\d+/)[0] : "N/A";
-    complainNumberEl.textContent = num;
-    popup.classList.add("show");
-    form.reset();
-  } catch (err) {
-    alert("❌ Failed to submit. Try again.");
-  }
-
-  button.disabled = false;
-  button.textContent = "📤 Submit Report";
-});
-
-/* Close popup */
-function closePopup() {
-  popup.classList.remove("show");
-}
-
-/* Autofill location */
-function fillLocation() {
-  if (!navigator.geolocation) {
-    alert("⚠️ Geolocation not supported");
-    return;
-  }
-  navigator.geolocation.getCurrentPosition(async (pos) => {
-    const { latitude, longitude } = pos.coords;
-    try {
-      let res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
-      let json = await res.json();
-      form.city.value = json.address.city || json.address.town || "";
-      form.state.value = json.address.state || "";
-      form.pin.value = json.address.postcode || "";
-      alert("📍 Location filled!");
-    } catch {
-      alert("❌ Could not fetch location");
+          // Auto-fill city, state, pin using free API
+          try {
+            let res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
+            let data = await res.json();
+            document.getElementById("city").value = data.address.city || data.address.town || "";
+            document.getElementById("state").value = data.address.state || "";
+            document.getElementById("pin").value = data.address.postcode || "";
+          } catch (e) {
+            console.log("Location fetch failed:", e);
+          }
+        });
+      } else {
+        alert("Geolocation not supported!");
+      }
     }
-  }, () => {
-    alert("❌ Location access denied");
-  });
-}
-</script>
 
+    document.getElementById("complaintForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+
+      const btn = document.getElementById("submitBtn");
+      btn.innerHTML = "Submitting... ⏳";
+      btn.disabled = true;
+
+      const formData = {
+        name: document.getElementById("name").value,
+        phone: document.getElementById("phone").value,
+        address: document.getElementById("address").value,
+        city: document.getElementById("city").value,
+        state: document.getElementById("state").value,
+        pin: document.getElementById("pin").value,
+        problem: document.getElementById("problem").value,
+        details: document.getElementById("details").value,
+        latitude: document.getElementById("latitude").value,
+        longitude: document.getElementById("longitude").value
+      };
+
+      fetch(scriptURL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData)
+      })
+      .then(res => res.json())
+      .then(data => {
+        btn.innerHTML = "Submit";
+        btn.disabled = false;
+
+        if (data.success) {
+          alert("✅ Complaint submitted! Your Complaint Number is: " + data.complaintNumber);
+          document.getElementById("complaintForm").reset();
+        } else {
+          alert("❌ Error: " + data.error);
+        }
+      })
+      .catch(err => {
+        btn.innerHTML = "Submit";
+        btn.disabled = false;
+        alert("❌ Failed to submit. Try again. " + err);
+      });
+    });
+  </script>
 </body>
 </html>
-
